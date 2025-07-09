@@ -31,18 +31,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            steps {
-                sshagent(['my-new-key-1']) {
-                    bat '''
-                        ssh -o StrictHostKeyChecking=no %EC2_HOST% ^
-                        "docker pull %DOCKER_IMAGE% && ^
-                        docker stop flask-app || true && ^
-                        docker rm flask-app || true && ^
-                        docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
-                    '''
-                }
-            }
-        }
+       stage('Deploy to EC2') {
+    steps {
+        bat """
+        echo Deploying to EC2...
+        ssh -o StrictHostKeyChecking=no -i C:\\Users\\Admin\\.ssh\\id_rsa ubuntu@16.171.136.221 "docker pull talhahamidsyed/flask && docker stop app || true && docker rm app || true && docker run -d --name app -p 80:5000 talhahamidsyed/flask"
+        """
+    }
+}
+
     }
 }
