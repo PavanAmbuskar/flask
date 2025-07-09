@@ -29,7 +29,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent(['ec2-key']) {
+                sshagent(['my-new-key-1']) {
                     bat """
                     ssh -o StrictHostKeyChecking=no %EC2_HOST% ^
                         "docker pull %DOCKER_IMAGE% && ^
