@@ -21,8 +21,12 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
-                    bat "docker push %DOCKER_IMAGE%"
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat '''
+                        echo Logging into DockerHub...
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        docker push %DOCKER_IMAGE%
+                    '''
                 }
             }
         }
@@ -30,13 +34,13 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sshagent(['my-new-key-1']) {
-                    bat """
-                    ssh -o StrictHostKeyChecking=no %EC2_HOST% ^
+                    bat '''
+                        ssh -o StrictHostKeyChecking=no %EC2_HOST% ^
                         "docker pull %DOCKER_IMAGE% && ^
                         docker stop flask-app || true && ^
                         docker rm flask-app || true && ^
                         docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
-                    """
+                    '''
                 }
             }
         }
