@@ -22,11 +22,11 @@ pipeline {
         stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat '''
-                        echo Logging into DockerHub...
-                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                        docker push %DOCKER_IMAGE%
-                    '''
+                    bat """
+                            echo Logging into DockerHub...
+                            docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                            docker push %DOCKER_IMAGE%
+                        """
                 }
             }
         }
