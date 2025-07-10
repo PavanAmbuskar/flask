@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "talhahamidsyed/flask"
-        EC2_HOST = "ubuntu@16.171.136.221"
+        DOCKER_IMAGE = "pavanambuskar/flask-k8s"
+        EC2_HOST = "ubuntu@44.210.122.166"
     }
 
     stages {
         stage('Clone Code') {
             steps {
-                git 'https://github.com/syedtalhahamid/flask.git'
+                git 'https://github.com/PavanAmbuskar/flask.git'
             }
         }
 
