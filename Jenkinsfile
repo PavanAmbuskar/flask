@@ -21,12 +21,12 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat """
-                            echo Logging into DockerHub...
-                            docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                            docker push %DOCKER_IMAGE%
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'KEY')]) {
+                        bat """
+                            echo Deploying to EC2...
+                            ssh -i %KEY% -o StrictHostKeyChecking=no ubuntu@44.210.122.166 "docker pull pavanambuskar/flask-k8s && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 pavanambuskar/flask-k8s"
                         """
+                      }
                 }
             }
         }
