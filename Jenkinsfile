@@ -37,13 +37,13 @@ stage('Deploy to EC2') {
             bat """
                 echo Fixing key permissions...
                 icacls "%KEY%" /inheritance:r
-                icacls "%KEY%" /grant:r "%USERNAME%:F"
+                icacls "%KEY%" /grant:r "jenkins:F"
+
                 echo Deploying to EC2...
                 ssh -i "%KEY%" -o StrictHostKeyChecking=no %EC2_HOST% "docker pull %DOCKER_IMAGE% && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
             """
-                }
-            }
         }
-
+    }
+}
     }
 }
