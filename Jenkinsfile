@@ -35,19 +35,16 @@ stage('Deploy to EC2') {
     steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'KEY')]) {
             bat """
-                echo Fixing key permissions on Windows...
-                
-                REM Step 1: Remove all inherited permissions from the key file.
+                echo Fixing key permissions...
                 icacls "%KEY%" /inheritance:r
-
-                REM Step 2: Remove permissions for the "BUILTIN\\Users" group, as requested by the error log.
-                icacls "%KEY%" /remove "BUILTIN\\Users"
+                icacls "%KEY%" /grant:r "jenkins:F"
 
                 echo Deploying to EC2...
+                ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/my-server.pem ubuntu@13.221.232.109 "hostname && uptime"
                 ssh -i "%KEY%" -o StrictHostKeyChecking=no %EC2_HOST% "docker pull %DOCKER_IMAGE% && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
             """
         }
     }
-} 
-   }
+}
+    }
 }
