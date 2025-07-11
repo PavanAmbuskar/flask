@@ -39,8 +39,9 @@ bat '''
 ssh -i C:\\Users\\Dell\\.ssh\\my-server.pem -o StrictHostKeyChecking=no ubuntu@13.221.232.109 ^
 "docker pull pavanambuskar/flask-k8s && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 pavanambuskar/flask-k8s"
 '''
-}
-}
-}   
-}
+                    }
+                }
+            }   
+        }
+    }
 }
