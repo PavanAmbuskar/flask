@@ -31,19 +31,17 @@ pipeline {
             }
         }
 
-stage('Deploy to EC2') {
-    steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'KEY')]) {
-            bat """
-                echo Fixing key permissions...
-                icacls "%KEY%" /inheritance:r
-                icacls "%KEY%" /grant:r "jenkins:F"
-
-                echo Deploying to EC2...
-                ssh -i "%KEY%" -o StrictHostKeyChecking=no %EC2_HOST% "docker pull %DOCKER_IMAGE% && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
-            """
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    sshagent(['ec2-key']) {
+                        bat """
+                            echo Deploying to EC2...
+                            ssh -o StrictHostKeyChecking=no %EC2_HOST% "docker pull %DOCKER_IMAGE% && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
+                        """
+                    }
+                }
+            }
         }
-    }
-}
     }
 }
