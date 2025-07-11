@@ -33,15 +33,17 @@ pipeline {
 
 stage('Deploy to EC2') {
     steps {
-        // Use the sshUserPrivateKey credential. Jenkins will handle making the key available.
-        // 'KEY' will be the path to the temporary key file.
         withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'KEY')]) {
-            // This is a Windows agent, so use a 'bat' step.
             bat """
-                echo Deploying to EC2...
+                echo Fixing key permissions on Windows...
+                
+                REM Step 1: Remove all inherited permissions from the key file.
+                icacls "%KEY%" /inheritance:r
 
-                REM Use the KEY variable, which contains the path to the SSH key file.
-                REM The double quotes around "%KEY%" are crucial, especially if the path contains spaces.
+                REM Step 2: Remove permissions for the "BUILTIN\\Users" group, as requested by the error log.
+                icacls "%KEY%" /remove "BUILTIN\\Users"
+
+                echo Deploying to EC2...
                 ssh -i "%KEY%" -o StrictHostKeyChecking=no %EC2_HOST% "docker pull %DOCKER_IMAGE% && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
             """
         }
