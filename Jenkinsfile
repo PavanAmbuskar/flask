@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "pavanambuskar/flask-k8s"
-        EC2_HOST = "ubuntu@44.210.122.166"
+        EC2_HOST = "ubuntu@13.221.232.109"
     }
 
     stages {
