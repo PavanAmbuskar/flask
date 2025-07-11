@@ -32,19 +32,15 @@ pipeline {
         }
 
 stage('Deploy to EC2') {
-    steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'KEY')]) {
-            bat """
-                echo Fixing key permissions...
-                icacls "%KEY%" /inheritance:r
-                icacls "%KEY%" /grant:r "jenkins:F"
-
-                echo Deploying to EC2...
-                ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/my-server.pem ubuntu@13.221.232.109 "hostname && uptime"
-                ssh -i "%KEY%" -o StrictHostKeyChecking=no %EC2_HOST% "docker pull %DOCKER_IMAGE% && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 %DOCKER_IMAGE%"
-            """
-        }
-    }
+stages {
+stage('Deploy') {
+steps {
+bat '''
+ssh -i C:\\Users\\Dell\\.ssh\\my-server.pem -o StrictHostKeyChecking=no ubuntu@13.221.232.109 ^
+"docker pull pavanambuskar/flask-k8s && docker stop flask-app || true && docker rm flask-app || true && docker run -d --name flask-app -p 80:5000 pavanambuskar/flask-k8s"
+'''
 }
-    }
+}
+}   
+}
 }
