@@ -35,6 +35,7 @@ stage('Deploy to EC2') {
     steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'KEY')]) {
             bat """
+                chmod 400 my-server.pem
                 echo Fixing key permissions...
                 icacls "%KEY%" /inheritance:r
                 icacls "%KEY%" /grant:r "jenkins:F"
