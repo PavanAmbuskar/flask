@@ -16,7 +16,8 @@ pipeline {
 
         stage('Install boto3') {
             steps {
-                bat 'python -m pip install boto3'
+bat '"C:\\Users\\<your-user>\\AppData\\Local\\Programs\\Python\\Python3x\\python.exe" -m pip install boto3'
+bat '"C:\\Users\\<your-user>\\AppData\\Local\\Programs\\Python\\Python3x\\python.exe" %PYTHON_SCRIPT%'
             }
         }
 
