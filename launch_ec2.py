@@ -32,4 +32,21 @@ instances = ec2.create_instances(
     MaxCount=1,
     InstanceType='t2.micro',
     KeyName='my-server',  # Make sure this key pair exists in us-east-1
-    SecurityGroupIds=['sg-04e73bb]()
+ SecurityGroupIds=['sg-04e73bbda715725b5'],  # Ensure port 22 & 5000 open
+    UserData=user_data_script,
+    TagSpecifications=[
+        {
+            'ResourceType': 'instance',
+            'Tags': [{'Key': 'Name', 'Value': 'flask-docker-instance'}]
+        }
+    ]
+)
+
+# Wait for the instance to be running
+instances[0].wait_until_running()
+
+# Reload instance to fetch public IP
+instances[0].reload()
+
+print(f"Launched EC2 Instance ID: {instances[0].id}")
+print(f"Public IP: {instances[0].public_ip_address}")
