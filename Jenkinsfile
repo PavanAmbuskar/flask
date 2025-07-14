@@ -16,13 +16,13 @@ pipeline {
 
         stage('Install boto3') {
             steps {
-bat '"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python3x\\Scripts" -m pip install boto3'
+                bat '"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install boto3'
             }
         }
 
         stage('Run EC2 Script') {
             steps {
-bat '"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python3x\\Scripts" %PYTHON_SCRIPT%'
+                bat '"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" %PYTHON_SCRIPT%'
             }
         }
     }
