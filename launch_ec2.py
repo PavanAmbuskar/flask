@@ -18,7 +18,7 @@ instance = ec2.create_instances(
     MaxCount=1,
     InstanceType='t2.micro',
     KeyName='my-server.pem',     # Replace with your actual key pair
-    SecurityGroupIds=['sg-xxxxxxxx'], # Replace with your security group ID
+    SecurityGroupIds=['sg-04e73bbda715725b5'], # Replace with your security group ID
     UserData=user_data_script,
     TagSpecifications=[
         {
