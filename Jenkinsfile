@@ -4,8 +4,7 @@ pipeline {
     stages {
         stage('Git Pull') {
             steps {
-                git branch: "main" url: 'https://github.com/PavanAmbuskar/flask.git'
-            }
+                    git branch: 'main', url: 'https://github.com/PavanAmbuskar/flask.git'            }
         }
 
         stage('Test PowerShell') {
