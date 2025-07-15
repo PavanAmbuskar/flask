@@ -1,29 +1,56 @@
 pipeline {
     agent any
 
-    environment {
-        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        PYTHON_SCRIPT = 'launch_ec2.py'
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Git Pull') {
             steps {
-                git 'https://github.com/PavanAmbuskar/flask.git'
+                git 'branch main url: https://github.com/PavanAmbuskar/flask.git'
             }
         }
 
-        stage('Install boto3') {
+        stage('Test PowerShell') {
             steps {
-                bat '"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install boto3'
+                powershell 'Write-Output "PowerShell is working!"'
             }
         }
 
-        stage('Run EC2 Script') {
+        stage('Docker Build') {
             steps {
-                bat '"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" %PYTHON_SCRIPT%'
+                bat 'docker build -t pavanambuskar/flask-k8s .'
             }
         }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    bat 'docker push pavanambuskar/flask-k8s'
+                }
+            }
+        }
+
+        stage('Deploy Flask via SSM') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-cred-id']
+                ]) {
+                    powershell '''
+                        # Step 1: Define commands array as a string for inline JSON
+                        $cmds = '["docker pull pavanambuskar/flask-k8s","docker rm -f flask || true","docker run -d --name flask -p 80:5000 
+                                    pavanambuskar/flask-k8s"]'
+        
+                        # Step 2: Use AWS CLI with correct --parameters key=value format
+                        aws ssm send-command `
+                            --document-name "AWS-RunShellScript" `
+                            --comment "DeployFlask" `
+                            --instance-ids "i-0c0db149ec396d4c4" `
+                            --parameters "commands=$cmds" `
+                            --region "us-east-1"
+                    '''
+                }
+            }
+        }
+
+
     }
 }

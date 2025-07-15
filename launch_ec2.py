@@ -27,7 +27,7 @@ docker run -d -p 5000:5000 --name my-flask-container flask-app-3
 
 # Launch EC2 instance
 instances = ec2.create_instances(
-    ImageId='ami-020cba7c55df1f615',  # ✅ Ubuntu 22.04 LTS
+    ImageId='ami-020cba7c55df1f615',  # Ubuntu 22.04 LTS
     MinCount=1,
     MaxCount=1,
     InstanceType='t2.micro',
